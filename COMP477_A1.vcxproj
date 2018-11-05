@@ -79,6 +79,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Quaternion.h" />
     <ClInclude Include="src\defMesh.h" />
     <ClInclude Include="src\glm.h" />
     <ClInclude Include="src\simpleMath.h" />
@@ -86,6 +87,7 @@
     <ClInclude Include="src\splitstring.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="src\defMesh.cpp" />
     <ClCompile Include="src\glm.cpp" />
     <ClCompile Include="src\glMain.cpp" />
