@@ -39,10 +39,12 @@ struct Mat3
 struct Mat4
 {
     double values[16];
-    Mat4()
+    Mat4(double values[16])
     {
-        for (unsigned i=0; i<16; i++)
-            values[i]=0;
+		for (unsigned i = 0; i < 16; i++)
+		{
+			this->values[i] = values[i];
+		}
     }
 };
 
