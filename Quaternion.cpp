@@ -9,6 +9,14 @@ Quaternion::Quaternion(double x, double y, double z, double w = 0)
 	this->z = z;
 }
 
+Quaternion::Quaternion(double angle, Vec3 axis)
+{
+	this->x = axis.x * sin(angle / 2);
+	this->y = axis.y * sin(angle / 2);
+	this->z = axis.z * sin(angle / 2);
+	this->w = cos(angle / 2);
+}
+
 Quaternion::~Quaternion()
 {
 }

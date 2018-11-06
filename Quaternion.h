@@ -5,6 +5,7 @@ class Quaternion
 {
 public:
 	Quaternion(double x, double y, double z, double w = 0);
+	Quaternion(double angle, Vec3 axis);
 	~Quaternion();
 
 	// Operator overloads
