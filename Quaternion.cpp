@@ -1,4 +1,5 @@
 #include "Quaternion.h"
+#define _USE_MATH_DEFINES
 #include <cmath>
 
 Quaternion::Quaternion(double x, double y, double z, double w = 0)
@@ -76,4 +77,25 @@ Mat4 Quaternion::toMatrix()
 	};
 
 	return Mat4(values);
+}
+
+Vec3 Quaternion::toEulerAngles()
+{
+	// Atan2 implementation is necessary because normal atan only returns  -pi/2<value<pi/2
+	Vec3 result;
+
+	// roll (x-axis rotation)
+	result.x = atan2(2 * (w * x + y * z), 1 - 2 * (x * x + y * y));
+
+	// pitch (y-axis rotation)
+	double sinp = 2 * (w * y - z * x);
+	if (fabs(sinp) >= 1)
+		result.y = copysign(M_PI / 2, sinp); // use 90 degrees if out of range
+	else
+		result.y = asin(sinp);
+
+	// yaw (z-axis rotation)
+	result.z = atan2(2 * (w * z + x * y), 1 - 2 * (y * y + z * z));
+
+	return result;
 }

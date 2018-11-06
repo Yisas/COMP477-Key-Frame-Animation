@@ -21,6 +21,7 @@ public:
 
 	// Conversions
 	Mat4 toMatrix();
+	Vec3 toEulerAngles();
 
 private:
 	double w;
