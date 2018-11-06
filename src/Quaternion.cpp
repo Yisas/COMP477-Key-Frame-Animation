@@ -2,7 +2,7 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
-Quaternion::Quaternion(double x, double y, double z, double w = 0)
+Quaternion::Quaternion(double x, double y, double z, double w)
 {
 	this->w = w;
 	this->x = x;
