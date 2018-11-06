@@ -2,7 +2,7 @@
 #define SIMPLEMATH_H
 
 #include <math.h>
-#include <cstring>
+#include <string>
 
 //Vectors
 struct Vec3
@@ -10,6 +10,9 @@ struct Vec3
     double x, y, z;
     Vec3() {x=0; y=0; z=0;}
     Vec3(double a, double b, double c):x(a),y(b),z(c){}
+	std::string toString() { return ("(" + std::to_string(x) + "," + std::to_string(y) + "," + std::to_string(z) + ")"); }
+
+	Vec3 operator+(Vec3 other);
 };
 
 struct Vec4

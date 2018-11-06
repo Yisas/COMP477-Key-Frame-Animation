@@ -111,3 +111,8 @@ void add(float* s,float* m, float *r)
     for(int i=0; i<16; ++i)
         r[i]=m[i]+s[i];
 }
+
+Vec3 Vec3::operator+(Vec3 other)
+{
+	return Vec3(x + other.x, y + other.y, z + other.z);
+}

@@ -18,6 +18,15 @@ Quaternion::Quaternion(double angle, Vec3 axis)
 	this->w = cos(angle / 2);
 }
 
+// Will produce a point form quaternion with w = 0
+Quaternion::Quaternion(Vec3 point)
+{
+	this->w = 0;
+	this->x = point.x;
+	this->y = point.y;
+	this->z = point.z;
+}
+
 Quaternion::~Quaternion()
 {
 }
@@ -65,6 +74,21 @@ double Quaternion::norm()
 Quaternion Quaternion::normalize()
 {
 	return Quaternion(*this / norm());
+}
+
+Vec3 Quaternion::rotatePoint(Vec3 point)
+{
+	if (this->norm() != 0)
+		std::cout << "Warning! Rotating point " + point.toString() + " with a non-unit quaternion " + this->toString() + "!" << std::endl;
+
+	// Convert point to a quaternion with w = 0
+	Quaternion pointInQuatForm = Quaternion(point);
+	Quaternion qv = *this * pointInQuatForm;				// q x v
+	Quaternion rotatedPoint = qv * this->conjugate();		// (q x v) x q^-1
+
+	// TODO: check that w was indeed = 0 after operations?
+
+	return Vec3(rotatedPoint.x, rotatedPoint.y, rotatedPoint.z);
 }
 
 Mat4 Quaternion::toMatrix()
