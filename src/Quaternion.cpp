@@ -82,7 +82,7 @@ Quaternion Quaternion::normalize()
 
 Vec3 Quaternion::rotatePoint(Vec3 point)
 {
-	if (this->norm() != 0)
+	if (!isUnit())
 		std::cout << "Warning! Rotating point " + point.toString() + " with a non-unit quaternion " + this->toString() + "!" << std::endl;
 
 	// Convert point to a quaternion with w = 0

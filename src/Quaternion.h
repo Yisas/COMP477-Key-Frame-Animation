@@ -28,6 +28,9 @@ public:
 	Mat4 toMatrix();
 	Vec3 toEulerAngles();
 
+	//Misc
+	bool isUnit() { return (norm() == 1); };
+
 private:
 	double w;
 	double x;
