@@ -22,6 +22,10 @@ DefMesh myDefMesh;
 //Switches
 int meshModel=0;
 bool drawSkeleton=true;
+bool editingMode = false;
+
+// Keyframe memory
+std::vector<std::vector<Joint>> jointsOfStoredKeyframes;
 
 //Window parameters
 int width = 1024;
@@ -50,6 +54,11 @@ bool _mouseRight = false;
 double _dragPosX = 0.0;
 double _dragPosY = 0.0;
 double _dragPosZ = 0.0;
+
+void ToggleProgramMode() {
+	editingMode = !editingMode;
+	cout << "Program switched to " << (editingMode ? "Editing" : "Animation") << " mode.\n";
+}
 
 double vlen(double x, double y, double z)
 {
@@ -254,11 +263,21 @@ void handleKeyPress(unsigned char key, int x, int y)
 { 
     switch(key)
     {
-        case 'm':
+        case 'v':
             meshModel = (meshModel+1)%3; break;
         case 'q':
-            exit(0);
-
+			exit(0); break;
+		case 'm':
+			ToggleProgramMode(); break;
+		case 't':
+			if(editingMode) {
+				jointsOfStoredKeyframes.push_back(myDefMesh.mySkeleton.joints);
+				cout << "Joint stored at position " << jointsOfStoredKeyframes.size() << ".\n";
+			}
+			else {
+				cout << "Keyframe not stored: try storing keyframes in editing mode.\n";
+			}
+			break;
     }
 }
 
