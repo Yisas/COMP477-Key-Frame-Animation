@@ -26,6 +26,7 @@ bool editingMode = false;
 
 // Keyframe memory
 std::vector<std::vector<Joint>> jointsOfStoredKeyframes;
+int currentKeyframePosition = 0;
 
 //Window parameters
 int width = 1024;
@@ -58,6 +59,42 @@ double _dragPosZ = 0.0;
 void ToggleProgramMode() {
 	editingMode = !editingMode;
 	cout << "Program switched to " << (editingMode ? "Editing" : "Animation") << " mode.\n";
+}
+
+void DisplayCurrentKeyframe() {
+	cout << "You are now editing in keyframe " << (currentKeyframePosition + 1) << " of " << jointsOfStoredKeyframes.size() << ".\n";
+}
+
+void NextKeyframe() {
+	if(jointsOfStoredKeyframes.size() == 0) {
+		cout << "No keyframes appended yet. Try appending by pressing 't' while in Editing mode\n";
+	}
+	else {
+		if (currentKeyframePosition + 1 >= jointsOfStoredKeyframes.size()) {
+			currentKeyframePosition = 0;
+		}
+		else {
+			currentKeyframePosition = currentKeyframePosition + 1;
+		}
+
+		DisplayCurrentKeyframe();
+	}
+}
+
+void PreviousKeyframe() {
+	if (jointsOfStoredKeyframes.size() == 0) {
+		cout << "No keyframes appended yet. Try appending by pressing 't' while in Editing mode\n";
+	}
+	else {
+		if (currentKeyframePosition - 1 < 0) {
+			currentKeyframePosition = jointsOfStoredKeyframes.size() - 1;
+		}
+		else {
+			currentKeyframePosition = currentKeyframePosition - 1;
+		}
+
+		DisplayCurrentKeyframe();
+	}
 }
 
 double vlen(double x, double y, double z)
@@ -273,11 +310,17 @@ void handleKeyPress(unsigned char key, int x, int y)
 			if(editingMode) {
 				jointsOfStoredKeyframes.push_back(myDefMesh.mySkeleton.joints);
 				cout << "Joint stored at position " << jointsOfStoredKeyframes.size() << ".\n";
+				currentKeyframePosition = jointsOfStoredKeyframes.size() - 1;
+				DisplayCurrentKeyframe();
 			}
 			else {
 				cout << "Keyframe not stored: try storing keyframes in editing mode.\n";
 			}
 			break;
+		case '+':
+			NextKeyframe(); break;
+		case '-':
+			PreviousKeyframe(); break;
     }
 }
 
