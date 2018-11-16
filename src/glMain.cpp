@@ -61,8 +61,15 @@ void ToggleProgramMode() {
 	cout << "Program switched to " << (editingMode ? "Editing" : "Animation") << " mode.\n";
 }
 
-void DisplayCurrentKeyframe() {
+void ConsoleDisplayCurrentKeyframe() {
 	cout << "You are now editing in keyframe " << (currentKeyframePosition + 1) << " of " << jointsOfStoredKeyframes.size() << ".\n";
+}
+
+// Make the model look like a specific stored keyframe
+void SetDisplayToNewKeyframe(int keyframe) {
+	myDefMesh.mySkeleton.joints = jointsOfStoredKeyframes[keyframe];
+	myDefMesh.mySkeleton.updateGlobal();
+	myDefMesh.updateVertices();
 }
 
 void NextKeyframe() {
@@ -77,7 +84,8 @@ void NextKeyframe() {
 			currentKeyframePosition = currentKeyframePosition + 1;
 		}
 
-		DisplayCurrentKeyframe();
+		SetDisplayToNewKeyframe(currentKeyframePosition);
+		ConsoleDisplayCurrentKeyframe();
 	}
 }
 
@@ -93,7 +101,8 @@ void PreviousKeyframe() {
 			currentKeyframePosition = currentKeyframePosition - 1;
 		}
 
-		DisplayCurrentKeyframe();
+		SetDisplayToNewKeyframe(currentKeyframePosition);
+		ConsoleDisplayCurrentKeyframe();
 	}
 }
 
@@ -311,7 +320,7 @@ void handleKeyPress(unsigned char key, int x, int y)
 				jointsOfStoredKeyframes.push_back(myDefMesh.mySkeleton.joints);
 				cout << "Joint stored at position " << jointsOfStoredKeyframes.size() << ".\n";
 				currentKeyframePosition = jointsOfStoredKeyframes.size() - 1;
-				DisplayCurrentKeyframe();
+				ConsoleDisplayCurrentKeyframe();
 			}
 			else {
 				cout << "Keyframe not stored: try storing keyframes in editing mode.\n";
