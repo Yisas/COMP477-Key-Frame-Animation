@@ -110,10 +110,35 @@ void PreviousKeyframe() {
 }
 
 void LoadKeyframesFromFile() {
+	ifstream keyframeFile(keyframeFileAddress);
+	if (keyframeFile.is_open()) {
+		string line;
 
+		while (getline(keyframeFile, line))
+		{
+			std::size_t current, previous = 0;
+			current = line.find(" ");
+			while (current != std::string::npos) {
+				Quaternion quaternion = (line.substr(previous, current - previous));
+				cout << quaternion.toString();	// deleteme
+				previous = current + 1;
+				current = line.find(" ", previous);
+			}
+		}
+
+		keyframeFile.close();
+	}
+	else {
+		cout << "Could not open file!";
+	}
 }
 
 void SaveKeyframesToFile() {
+	if (jointsOfStoredKeyframes.size() <= 0) {
+		cout << "There are no saved keyframes to store!";
+		return;
+	}
+
 	ofstream keyframeFile;
 	keyframeFile.open(keyframeFileAddress);
 	for (int i = 0; i < jointsOfStoredKeyframes.size(); i++) {
@@ -123,6 +148,8 @@ void SaveKeyframesToFile() {
 		keyframeFile << "\n";
 	}
 	keyframeFile.close();
+
+	cout << "Keyframes succesfully stored to file.\n";
 }
 
 #pragma endregion

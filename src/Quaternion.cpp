@@ -30,7 +30,9 @@ Quaternion::Quaternion(double angle, Vec3 axis)
 	this->w = cos(angle / 2);
 }
 
-// Will produce a point form quaternion with w = 0
+/**
+Will produce a point form quaternion with w = 0
+**/
 Quaternion::Quaternion(Vec3 point)
 {
 	this->w = 0;
@@ -42,6 +44,25 @@ Quaternion::Quaternion(Vec3 point)
 Quaternion::Quaternion(float rotationMatrix[16])
 {
 	this->rotationMatrixToQuaternion(rotationMatrix);
+}
+
+/**
+String format should coincide with toString method
+**/
+Quaternion::Quaternion(std::string quaternion)
+{
+	std::size_t current, previous = 0;
+	current = quaternion.find(",");
+	w = stod(quaternion.substr(1, current - 1));					// Exclude "(" at beginning 
+	previous = current + 1;
+	current = quaternion.find(",", previous);
+	x = stod(quaternion.substr(previous, current - previous - 1));	// Exclude "(" at beginning and symbol at end
+	previous = current + 1;
+	current = quaternion.find(",", previous);
+	y = stod(quaternion.substr(previous, current - previous - 1));	// Exclude "(" at beginning and symbol at end
+	previous = current + 1;
+	current = quaternion.find(",", previous);
+	z = stod(quaternion.substr(previous, current - previous - 1));	// Exclude "(" at beginning and symbol at end
 }
 
 Quaternion::~Quaternion()
