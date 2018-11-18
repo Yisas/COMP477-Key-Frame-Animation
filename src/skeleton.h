@@ -16,8 +16,8 @@
 #endif
 
 #include "simpleMath.h"
+#include "Quaternion.h"
 #include <iostream>
-
 
 
 struct Joint
@@ -29,6 +29,7 @@ struct Joint
     bool isPicked;
     
     float local_t[16];
+	Quaternion localQuaternion;
     float global_t[16];
     
     Joint()

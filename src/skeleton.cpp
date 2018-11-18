@@ -143,6 +143,7 @@ void Skeleton::addRotation(float* q)
         if(joints[i].isPicked)
         {
             mult(joints[i].local_t, q, joints[i].local_t);
+			joints[i].localQuaternion = Quaternion::rotationMatrixToQuaternion(joints[i].local_t);
             break;
         }
     }

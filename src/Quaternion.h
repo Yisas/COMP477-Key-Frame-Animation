@@ -6,6 +6,7 @@
 class Quaternion
 {
 public:
+	Quaternion();
 	Quaternion(double x, double y, double z, double w = 0);
 	Quaternion(double angle, Vec3 axis);
 	Quaternion(Vec3 point);
@@ -28,7 +29,7 @@ public:
 	// Conversions
 	Mat4 toMatrix();
 	Vec3 toEulerAngles();
-	Quaternion rotationMatrixToQuaternion(float rotationMatrix[16]);
+	static Quaternion rotationMatrixToQuaternion(float* rotationMatrix);
 
 	//Misc
 	bool isUnit() { return (norm() == 1); };

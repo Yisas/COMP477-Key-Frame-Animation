@@ -6,6 +6,14 @@
 #define M_PI 3.14159265358979323846
 #endif
 
+Quaternion::Quaternion()
+{
+	this->w = 1.0;
+	this->x = 0.0;
+	this->y = 0.0;
+	this->z = 0.0;
+}
+
 Quaternion::Quaternion(double x, double y, double z, double w)
 {
 	this->w = w;
@@ -133,17 +141,17 @@ Vec3 Quaternion::toEulerAngles()
 	return result;
 }
 
-Quaternion Quaternion::rotationMatrixToQuaternion(float rotationMatrix[16])
+Quaternion Quaternion::rotationMatrixToQuaternion(float* rotationMatrix)
 {
 	// Calculate the trace
-	float t = rotationMatrix[0] + rotationMatrix[5] + rotationMatrix[10] + 1;
+	float t = rotationMatrix[0] + rotationMatrix[5] + rotationMatrix[10];
 
 	if (t > 0) {
-		float S = 0.5 / sqrt(t);
+		float S = sqrt(t + 1.0) * 2;						// S=4*qw 
 		return Quaternion(
-			(rotationMatrix[9] - rotationMatrix[6]) * S,	// X = (m21 - m12) * S
-			(rotationMatrix[2] - rotationMatrix[8]) * S,	// Y = (m02 - m20) * S
-			(rotationMatrix[4] - rotationMatrix[1]) * S,	// Z = (m10 - m01) * S
+			(rotationMatrix[9] - rotationMatrix[6]) / S,	// X = (m21 - m12) / S
+			(rotationMatrix[2] - rotationMatrix[8]) / S,	// Y = (m02 - m20) / S
+			(rotationMatrix[4] - rotationMatrix[1]) / S,	// Z = (m10 - m01) / S
 			0.25 / S
 		);
 	}
