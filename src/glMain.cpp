@@ -22,11 +22,12 @@ DefMesh myDefMesh;
 //Switches
 int meshModel=0;
 bool drawSkeleton=true;
-bool editingMode = false;
+bool editingMode = true;
 
 // Keyframe memory
 std::vector<std::vector<Joint>> jointsOfStoredKeyframes;
 int currentKeyframePosition = 0;
+static const string keyframeFileAddress = "model/keyframes.txt";
 
 //Window parameters
 int width = 1024;
@@ -55,6 +56,8 @@ bool _mouseRight = false;
 double _dragPosX = 0.0;
 double _dragPosY = 0.0;
 double _dragPosZ = 0.0;
+
+#pragma region "Keyframe control methods"
 
 void ToggleProgramMode() {
 	editingMode = !editingMode;
@@ -105,6 +108,24 @@ void PreviousKeyframe() {
 		ConsoleDisplayCurrentKeyframe();
 	}
 }
+
+void LoadKeyframesFromFile() {
+
+}
+
+void SaveKeyframesToFile() {
+	ofstream keyframeFile;
+	keyframeFile.open(keyframeFileAddress);
+	for (int i = 0; i < jointsOfStoredKeyframes.size(); i++) {
+		for (int j = 0; j < jointsOfStoredKeyframes[i].size(); j++) {
+			keyframeFile << jointsOfStoredKeyframes[i][j].localQuaternion.toString() << " ";
+		}
+		keyframeFile << "\n";
+	}
+	keyframeFile.close();
+}
+
+#pragma endregion
 
 double vlen(double x, double y, double z)
 {
@@ -330,6 +351,10 @@ void handleKeyPress(unsigned char key, int x, int y)
 			NextKeyframe(); break;
 		case '-':
 			PreviousKeyframe(); break;
+		case 'l':
+			LoadKeyframesFromFile();
+		case 's':
+			SaveKeyframesToFile();
     }
 }
 
