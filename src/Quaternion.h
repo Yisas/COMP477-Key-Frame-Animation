@@ -9,6 +9,7 @@ public:
 	Quaternion(double x, double y, double z, double w = 0);
 	Quaternion(double angle, Vec3 axis);
 	Quaternion(Vec3 point);
+	Quaternion(float rotationMatrix[16]);
 	~Quaternion();
 	std::string toString() { return ("(" + std::to_string(w) + ", " + std::to_string(x) + "i, " + std::to_string(y) + "j, " + std::to_string(z) + "k)"); };
 
@@ -27,6 +28,7 @@ public:
 	// Conversions
 	Mat4 toMatrix();
 	Vec3 toEulerAngles();
+	Quaternion rotationMatrixToQuaternion(float rotationMatrix[16]);
 
 	//Misc
 	bool isUnit() { return (norm() == 1); };

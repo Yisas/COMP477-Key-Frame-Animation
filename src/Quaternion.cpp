@@ -31,6 +31,11 @@ Quaternion::Quaternion(Vec3 point)
 	this->z = point.z;
 }
 
+Quaternion::Quaternion(float rotationMatrix[16])
+{
+	this->rotationMatrixToQuaternion(rotationMatrix);
+}
+
 Quaternion::~Quaternion()
 {
 }
@@ -126,4 +131,47 @@ Vec3 Quaternion::toEulerAngles()
 	result.z = atan2(2 * (w * z + x * y), 1 - 2 * (y * y + z * z));
 
 	return result;
+}
+
+Quaternion Quaternion::rotationMatrixToQuaternion(float rotationMatrix[16])
+{
+	// Calculate the trace
+	float t = rotationMatrix[0] + rotationMatrix[5] + rotationMatrix[10] + 1;
+
+	if (t > 0) {
+		float S = 0.5 / sqrt(t);
+		return Quaternion(
+			(rotationMatrix[9] - rotationMatrix[6]) * S,	// X = (m21 - m12) * S
+			(rotationMatrix[2] - rotationMatrix[8]) * S,	// Y = (m02 - m20) * S
+			(rotationMatrix[4] - rotationMatrix[1]) * S,	// Z = (m10 - m01) * S
+			0.25 / S
+		);
+	}
+	else if ((rotationMatrix[0] > rotationMatrix[5]) && (rotationMatrix[0] > rotationMatrix[10])) {	// (m00 > m11)&(m00 > m22)
+		float S = sqrt(1.0 + rotationMatrix[0] - rotationMatrix[5] - rotationMatrix[10]) * 2;		// S=4*qx 
+		return Quaternion(
+			0.25 * S,
+			(rotationMatrix[1] + rotationMatrix[5]) / S,	// Y = (m01 + m10) / S
+			(rotationMatrix[2] + rotationMatrix[8]) / S,	// Z = (m02 + m20) / S
+			(rotationMatrix[9] - rotationMatrix[6]) / S		// w = (m21 - m12) / S
+		);
+	}
+	else if (rotationMatrix[5] > rotationMatrix[10]) {		// m11 > m22
+		float S = sqrt(1.0 + rotationMatrix[5] - rotationMatrix[0] - rotationMatrix[10]) * 2;	// S=4*qy
+		return Quaternion(
+			(rotationMatrix[1] + rotationMatrix[4]) / S,	// X = (m01 + m10) / S
+			0.25 * S,										// Y = 0.25 * S;
+			(rotationMatrix[6] + rotationMatrix[9]) / S,	// Z = (m12 + m21) / S;
+			(rotationMatrix[2] - rotationMatrix[8]) / S		// W = (m02 - m20) / S
+		);
+	}
+	else {
+		float S = sqrt(1.0 + rotationMatrix[10] - rotationMatrix[0] - rotationMatrix[5]) * 2; // S=4*qz
+		return Quaternion(
+			(rotationMatrix[2] + rotationMatrix[8]) / S,	// X = (m02 + m20) / S
+			(rotationMatrix[6] + rotationMatrix[9]) / S,	// Y = (m12 + m21) / S
+			0.25 * S,										// Z = 0.25 * S
+			(rotationMatrix[4] - rotationMatrix[1]) / S		// W = (m10 - m01) / S;
+		);
+	}
 }
