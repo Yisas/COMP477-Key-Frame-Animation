@@ -34,6 +34,8 @@ bool animationPlaying = false;
 const float animationTimestep = 0.02f;
 float animationSpeedMultiplier = 1.0f;
 float animationCurrentTimestepValue = 0.0f;
+enum InterpolationMode { MATRIX, EULER, LERP, SLERP};
+InterpolationMode currentInterpolationMode = InterpolationMode::MATRIX;
 
 //Window parameters
 int width = 1024;
@@ -178,6 +180,25 @@ void SaveKeyframesToFile() {
 
 #pragma endregion
 
+#pragma region Animation Methods
+
+void SetInterpolationMode(InterpolationMode newMode) {
+	currentInterpolationMode = newMode;
+	cout << "Interpolation mode changed to ";
+	switch (currentInterpolationMode)
+	{
+		case InterpolationMode::MATRIX:
+			cout << "Matrix"; break;
+		case InterpolationMode::EULER:
+			cout << "Euler"; break;
+		case InterpolationMode::LERP:
+			cout << "LERP"; break;
+		case InterpolationMode::SLERP:
+			cout << "SLERP"; break;
+	}
+	cout << ".\n";
+}
+
 void PlayAnimation() {
 	if (editingMode) {
 		cout << "Switch to animation mode before playing the animation.\n";
@@ -231,6 +252,8 @@ void ExecuteInterpolationTimestep() {
 			StopAnimation();
 	}
 }
+
+#pragma endregion
 
 double vlen(double x, double y, double z)
 {
@@ -462,6 +485,14 @@ void handleKeyPress(unsigned char key, int x, int y)
 			SaveKeyframesToFile(); break;
 		case 'p':
 			PlayAnimation(); break;
+		case '1':
+			SetInterpolationMode(InterpolationMode::MATRIX); break;
+		case '2':
+			SetInterpolationMode(InterpolationMode::EULER); break;
+		case '3':
+			SetInterpolationMode(InterpolationMode::LERP); break;
+		case '4':
+			SetInterpolationMode(InterpolationMode::SLERP); break;
     }
 }
 
