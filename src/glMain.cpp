@@ -27,7 +27,8 @@ bool editingMode = true;
 // Keyframe memory
 std::vector<std::vector<Joint>> jointsOfStoredKeyframes;
 int currentKeyframe = 0;
-static const string keyframeFileAddress = "model/keyframes.txt";
+static const string keyframeFileAddress = "model/";
+static const string keyframeFileExtension = ".anim";
 
 // Animation attributes
 bool animationPlaying = false;
@@ -118,7 +119,11 @@ void PreviousKeyframe() {
 }
 
 void LoadKeyframesFromFile() {
-	ifstream keyframeFile(keyframeFileAddress);
+	string chosenFileName;
+	cout << "Enter the name of the animation you wish to load:\n";
+	cin >> chosenFileName;
+
+	ifstream keyframeFile(keyframeFileAddress + "/" + chosenFileName + keyframeFileExtension);
 	if (keyframeFile.is_open()) {
 		int numOfReadKeyframes = 0;
 		std::vector<Quaternion> readQuaternions;	// Store local quaternions for this set of joints
@@ -165,8 +170,12 @@ void SaveKeyframesToFile() {
 		return;
 	}
 
+	string chosenFileName;
+	cout << "Name the animation file:\n";
+	cin >> chosenFileName;
+
 	ofstream keyframeFile;
-	keyframeFile.open(keyframeFileAddress);
+	keyframeFile.open(keyframeFileAddress + "/" + chosenFileName + keyframeFileExtension);
 	for (int i = 0; i < jointsOfStoredKeyframes.size(); i++) {
 		for (int j = 0; j < jointsOfStoredKeyframes[i].size(); j++) {
 			keyframeFile << jointsOfStoredKeyframes[i][j].localQuaternion.toString() << " ";
