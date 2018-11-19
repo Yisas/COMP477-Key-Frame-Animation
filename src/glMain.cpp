@@ -137,7 +137,7 @@ void LoadKeyframesFromFile() {
 		for (int i = 0; i < numOfReadKeyframes; i++) {
 			std::vector<Joint> jointsCopy = myDefMesh.mySkeleton.joints;
 			for (int j = 0; j < jointsCopy.size(); j++) {
-				jointsCopy[j].loadFromLocalQuaternion(readQuaternions[(i + 1) * j]);
+				jointsCopy[j].loadFromLocalQuaternion(readQuaternions[(i * (jointsCopy.size())) + j]);
 			}
 			jointsOfStoredKeyframes.push_back(jointsCopy);
 		}
