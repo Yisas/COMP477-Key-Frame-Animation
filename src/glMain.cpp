@@ -156,17 +156,17 @@ void LoadKeyframesFromFile() {
 		}
 
 		SetDisplayToNewKeyframe(currentKeyframe);
-		cout << "Keyframes succesfully loaded.";
+		cout << "Keyframes succesfully loaded.\n";
 		ConsoleDisplayCurrentKeyframe();
 	}
 	else {
-		cout << "Could not open file!";
+		cout << "Could not open file!\n";
 	}
 }
 
 void SaveKeyframesToFile() {
 	if (jointsOfStoredKeyframes.size() <= 0) {
-		cout << "There are no saved keyframes to store!";
+		cout << "There are no saved keyframes to store!\n";
 		return;
 	}
 
@@ -278,6 +278,18 @@ void ExecuteInterpolationTimestep() {
 				case InterpolationMode::LERP:
 					for (int i = 0; i < myDefMesh.mySkeleton.joints.size(); i++) {
 						Quaternion interpolatedQuaternion = Quaternion::interpolateLineraly(
+							jointsOfStoredKeyframes[currentKeyframe][i].localQuaternion,
+							jointsOfStoredKeyframes[currentKeyframe + 1][i].localQuaternion,
+							animationCurrentTimestepValue
+						);
+
+						myDefMesh.mySkeleton.joints[i].setLocalTransform(interpolatedQuaternion);
+					}
+					break;
+
+				case InterpolationMode::SLERP:
+					for (int i = 0; i < myDefMesh.mySkeleton.joints.size(); i++) {
+						Quaternion interpolatedQuaternion = Quaternion::SLERP(
 							jointsOfStoredKeyframes[currentKeyframe][i].localQuaternion,
 							jointsOfStoredKeyframes[currentKeyframe + 1][i].localQuaternion,
 							animationCurrentTimestepValue

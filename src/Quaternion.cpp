@@ -267,3 +267,34 @@ Quaternion Quaternion::interpolateLineraly(Quaternion a, Quaternion b, float t)
 {
 		return Quaternion(a + ((b - a) * t));
 }
+
+Quaternion Quaternion::SLERP(Quaternion a, Quaternion b, float t)
+{
+	// Compute the cosine of the angle between the two vectors.
+	double dot = Quaternion::dot(a, b);
+
+	// If the dot product is negative, slerp won't take
+	// the shorter path. Fix by reversing one quaternion.
+	if (dot < 0.0f) {
+		b = b * -1;
+		dot = -dot;
+	}
+
+	if (dot > 0.9995) {
+		// If the inputs are too close for comfort, linearly interpolate
+		// and normalize the result.
+
+		return interpolateLineraly(a, b, t);
+	}
+
+	// Since dot is in range [0, 0.9995], acos is safe
+	double theta_0 = acos(dot);        // theta_0 = angle between input vectors
+	double theta = theta_0 * t;          // theta = angle between v0 and result
+	double sin_theta = sin(theta);     // compute this value only once
+	double sin_theta_0 = sin(theta_0); // compute this value only once
+
+	double s0 = cos(theta) - dot * sin_theta / sin_theta_0;  // == sin(theta_0 - theta) / sin(theta_0)
+	double s1 = sin_theta / sin_theta_0;
+
+	return (a * s0) + (b * s1);
+}

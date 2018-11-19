@@ -42,6 +42,7 @@ public:
 	Vec3 toEulerAngles();
 	static Quaternion rotationMatrixToQuaternion(float* rotationMatrix);
 	static Quaternion interpolateLineraly(Quaternion a, Quaternion b, float t);
+	static Quaternion SLERP(Quaternion a, Quaternion b, float t);
 
 	//Misc
 	bool isUnit() { return (norm() == 1); };
