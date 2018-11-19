@@ -43,7 +43,7 @@ Quaternion::Quaternion(Vec3 point)
 
 Quaternion::Quaternion(float rotationMatrix[16])
 {
-	this->rotationMatrixToQuaternion(rotationMatrix);
+	*this = rotationMatrixToQuaternion(rotationMatrix);
 }
 
 /**
@@ -150,7 +150,12 @@ float * Quaternion::toFloatMatrix()
 		0, 0, 0, 1
 	};
 
-	return values;
+	float* returnArray = new float[16];
+	for (int i = 0; i < 16; i++) {
+		returnArray[i] = values[i];
+	}
+
+	return returnArray;
 }
 
 Vec3 Quaternion::toEulerAngles()
@@ -185,7 +190,7 @@ Quaternion Quaternion::rotationMatrixToQuaternion(float* rotationMatrix)
 			(rotationMatrix[9] - rotationMatrix[6]) / S,	// X = (m21 - m12) / S
 			(rotationMatrix[2] - rotationMatrix[8]) / S,	// Y = (m02 - m20) / S
 			(rotationMatrix[4] - rotationMatrix[1]) / S,	// Z = (m10 - m01) / S
-			0.25 / S
+			0.25 * S
 		);
 	}
 	else if ((rotationMatrix[0] > rotationMatrix[5]) && (rotationMatrix[0] > rotationMatrix[10])) {	// (m00 > m11)&(m00 > m22)
