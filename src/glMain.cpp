@@ -588,9 +588,19 @@ void handleKeyPress(unsigned char key, int x, int y)
 			ToggleProgramMode(); break;
 		case 't':
 			if(editingMode) {
-				jointsOfStoredKeyframes.push_back(myDefMesh.mySkeleton.joints);
-				cout << "Joint stored at position " << jointsOfStoredKeyframes.size() << ".\n";
-				currentKeyframe = jointsOfStoredKeyframes.size() - 1;
+				if (currentKeyframe + 1 >= jointsOfStoredKeyframes.size()) {
+					jointsOfStoredKeyframes.push_back(myDefMesh.mySkeleton.joints);
+
+					if (jointsOfStoredKeyframes.size() > 1) {
+						currentKeyframe++;
+					}
+				}
+				else {
+					jointsOfStoredKeyframes.insert(jointsOfStoredKeyframes.begin() + currentKeyframe + 1, myDefMesh.mySkeleton.joints);
+					currentKeyframe++;
+				}
+
+				cout << "Joint stored at position " << currentKeyframe + 1 << ".\n";
 				ConsoleDisplayCurrentKeyframe();
 			}
 			else {
