@@ -258,80 +258,86 @@ void StopAnimation() {
 void ExecuteInterpolationTimestep() {
 	// If there are keyframes to animate...
 	if (jointsOfStoredKeyframes.size() > 1) {
-		// ... If we haven't reached the end of the animation
-		if (currentKeyframe != jointsOfStoredKeyframes.size() - 1) {
-			animationCurrentTimestepValue += animationTimestep * animationSpeedMultiplier;
-			// If we hit the end of the keyframe interpolation, increase keyframe counter and do nothing
-			if (animationCurrentTimestepValue >= 1.0f) {
-				currentKeyframe++;
-				animationCurrentTimestepValue = 0;
-				ConsoleDisplayCurrentKeyframe();
-			}
+		// ... If we reached the end of the animation
+		if (currentKeyframe >= jointsOfStoredKeyframes.size() - 1) {
+			// ... Reached final keyframe, cycle back to top
+			currentKeyframe = 0;
+			ConsoleDisplayCurrentKeyframe();
+		}
 
-			// Perform interpolation
-			else {
+		std::vector<Joint> keyframeToInterpolateFrom;
+		std::vector<Joint> keyframeToInterpolateTowards;
+		keyframeToInterpolateFrom = jointsOfStoredKeyframes[currentKeyframe];
+		keyframeToInterpolateTowards = jointsOfStoredKeyframes[currentKeyframe + 1];
 
-				switch (currentInterpolationMode)
-				{
-				case InterpolationMode::MATRIX:
-					for (int i = 0; i < myDefMesh.mySkeleton.joints.size(); i++) {
-						myDefMesh.mySkeleton.joints[i].setLocalTransform(
-							interpolateLineraly(
-								jointsOfStoredKeyframes[currentKeyframe][i].local_t,
-								jointsOfStoredKeyframes[currentKeyframe + 1][i].local_t,
-								animationCurrentTimestepValue
-							));
-					}
-					break;
+		animationCurrentTimestepValue += animationTimestep * animationSpeedMultiplier;
+		// If we hit the end of the keyframe interpolation, increase keyframe counter and do nothing
+		if (animationCurrentTimestepValue >= 1.0f) {
+			currentKeyframe++;
+			animationCurrentTimestepValue = 0;
+			ConsoleDisplayCurrentKeyframe();
+		}
+		// Perform interpolation
+		else {
 
-				case InterpolationMode::EULER:
-					for (int i = 0; i < myDefMesh.mySkeleton.joints.size(); i++) {
-						// Convert local quaternions to euler angles and interpolate
-						Vec3 interpolatedEulerAngles = interpolateLineraly(
-							jointsOfStoredKeyframes[currentKeyframe][i].localQuaternion.toEulerAngles(),
-							jointsOfStoredKeyframes[currentKeyframe + 1][i].localQuaternion.toEulerAngles(),
+			switch (currentInterpolationMode)
+			{
+			case InterpolationMode::MATRIX:
+				for (int i = 0; i < myDefMesh.mySkeleton.joints.size(); i++) {
+					myDefMesh.mySkeleton.joints[i].setLocalTransform(
+						interpolateLineraly(
+							keyframeToInterpolateFrom[i].local_t,
+							keyframeToInterpolateTowards[i].local_t,
 							animationCurrentTimestepValue
-						);
+						));
+				}
+				break;
 
-						myDefMesh.mySkeleton.joints[i].setLocalTransform(
-							// Build and load quaternion from interpolated euler angles
-							Quaternion(interpolatedEulerAngles.x, interpolatedEulerAngles.y, interpolatedEulerAngles.z));
-					}
-					
-					break;
-				
-				case InterpolationMode::LERP:
-					for (int i = 0; i < myDefMesh.mySkeleton.joints.size(); i++) {
-						Quaternion interpolatedQuaternion = Quaternion::interpolateLineraly(
-							jointsOfStoredKeyframes[currentKeyframe][i].localQuaternion,
-							jointsOfStoredKeyframes[currentKeyframe + 1][i].localQuaternion,
-							animationCurrentTimestepValue
-						);
+			case InterpolationMode::EULER:
+				for (int i = 0; i < myDefMesh.mySkeleton.joints.size(); i++) {
+					// Convert local quaternions to euler angles and interpolate
+					Vec3 interpolatedEulerAngles = interpolateLineraly(
+						keyframeToInterpolateFrom[i].localQuaternion.toEulerAngles(),
+						keyframeToInterpolateTowards[i].localQuaternion.toEulerAngles(),
+						animationCurrentTimestepValue
+					);
 
-						myDefMesh.mySkeleton.joints[i].setLocalTransform(interpolatedQuaternion);
-					}
-					break;
-
-				case InterpolationMode::SLERP:
-					for (int i = 0; i < myDefMesh.mySkeleton.joints.size(); i++) {
-						Quaternion interpolatedQuaternion = Quaternion::SLERP(
-							jointsOfStoredKeyframes[currentKeyframe][i].localQuaternion,
-							jointsOfStoredKeyframes[currentKeyframe + 1][i].localQuaternion,
-							animationCurrentTimestepValue
-						);
-
-						myDefMesh.mySkeleton.joints[i].setLocalTransform(interpolatedQuaternion);
-					}
-					break;
+					myDefMesh.mySkeleton.joints[i].setLocalTransform(
+						// Build and load quaternion from interpolated euler angles
+						Quaternion(interpolatedEulerAngles.x, interpolatedEulerAngles.y, interpolatedEulerAngles.z));
 				}
 
-				// Changed display now that joints have been interpolated
-				myDefMesh.mySkeleton.updateGlobal();
-				myDefMesh.updateVertices();
+				break;
+
+			case InterpolationMode::LERP:
+				for (int i = 0; i < myDefMesh.mySkeleton.joints.size(); i++) {
+					Quaternion interpolatedQuaternion = Quaternion::interpolateLineraly(
+						keyframeToInterpolateFrom[i].localQuaternion,
+						keyframeToInterpolateTowards[i].localQuaternion,
+						animationCurrentTimestepValue
+					);
+
+					myDefMesh.mySkeleton.joints[i].setLocalTransform(interpolatedQuaternion);
+				}
+				break;
+
+			case InterpolationMode::SLERP:
+				for (int i = 0; i < myDefMesh.mySkeleton.joints.size(); i++) {
+					Quaternion interpolatedQuaternion = Quaternion::SLERP(
+						keyframeToInterpolateFrom[i].localQuaternion,
+						keyframeToInterpolateTowards[i].localQuaternion,
+						animationCurrentTimestepValue
+					);
+
+					myDefMesh.mySkeleton.joints[i].setLocalTransform(interpolatedQuaternion);
+				}
+				break;
 			}
+
+			// Changed display now that joints have been interpolated
+			myDefMesh.mySkeleton.updateGlobal();
+			myDefMesh.updateVertices();
 		}
-		else
-			StopAnimation();
 	}
 }
 
