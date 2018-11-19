@@ -100,12 +100,32 @@ Quaternion Quaternion::operator*(Quaternion other)
 	);
 }
 
-Quaternion Quaternion::operator*(double scalar)
+Quaternion Quaternion::operator+(Quaternion other)
+{
+	return Quaternion(
+		x + other.x,
+		y + other.y,
+		z + other.z,
+		w + other.w
+	);
+}
+
+Quaternion Quaternion::operator-(Quaternion other)
+{
+	return Quaternion(
+		x - other.x,
+		y - other.y,
+		z - other.z,
+		w - other.w
+	);
+}
+
+Quaternion Quaternion::operator*(float scalar)
 {
 	return Quaternion(x * scalar, y * scalar, z * scalar, w * scalar);
 }
 
-Quaternion Quaternion::operator/(double scalar)
+Quaternion Quaternion::operator/(float scalar)
 {
 	return Quaternion(x / scalar, y / scalar, z / scalar, w / scalar);
 }
@@ -241,4 +261,9 @@ Quaternion Quaternion::rotationMatrixToQuaternion(float* rotationMatrix)
 			(rotationMatrix[4] - rotationMatrix[1]) / S		// W = (m10 - m01) / S;
 		);
 	}
+}
+
+Quaternion Quaternion::interpolateLineraly(Quaternion a, Quaternion b, float t)
+{
+		return Quaternion(a + ((b - a) * t));
 }

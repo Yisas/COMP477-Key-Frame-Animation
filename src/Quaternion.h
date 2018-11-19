@@ -24,8 +24,10 @@ public:
 
 	// Operator overloads
 	Quaternion operator*(Quaternion other);
-	Quaternion operator*(double scalar);
-	Quaternion operator/(double scalar);
+	Quaternion operator+(Quaternion other);
+	Quaternion operator-(Quaternion other);
+	Quaternion operator*(float scalar);
+	Quaternion operator/(float scalar);
 
 	// Custom operations
 	static double dot(Quaternion a, Quaternion b);
@@ -39,6 +41,7 @@ public:
 	float* toFloatMatrix();
 	Vec3 toEulerAngles();
 	static Quaternion rotationMatrixToQuaternion(float* rotationMatrix);
+	static Quaternion interpolateLineraly(Quaternion a, Quaternion b, float t);
 
 	//Misc
 	bool isUnit() { return (norm() == 1); };

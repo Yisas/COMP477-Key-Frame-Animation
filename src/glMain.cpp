@@ -274,6 +274,18 @@ void ExecuteInterpolationTimestep() {
 					}
 					
 					break;
+				
+				case InterpolationMode::LERP:
+					for (int i = 0; i < myDefMesh.mySkeleton.joints.size(); i++) {
+						Quaternion interpolatedQuaternion = Quaternion::interpolateLineraly(
+							jointsOfStoredKeyframes[currentKeyframe][i].localQuaternion,
+							jointsOfStoredKeyframes[currentKeyframe + 1][i].localQuaternion,
+							animationCurrentTimestepValue
+						);
+
+						myDefMesh.mySkeleton.joints[i].setLocalTransform(interpolatedQuaternion);
+					}
+					break;
 				}
 
 				// Changed display now that joints have been interpolated
