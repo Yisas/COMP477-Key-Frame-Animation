@@ -47,7 +47,7 @@ struct Joint
         global_t[0]=global_t[5]=global_t[10]=global_t[15]=1.0;
     }
 
-	void loadFromLocalQuaternion(Quaternion newLocalQuaternion) {
+	void setLocalTransform(Quaternion newLocalQuaternion) {
 		localQuaternion = newLocalQuaternion;
 		float* newLocal_t = newLocalQuaternion.toFloatMatrix();
 		for(int i =0; i < 16; i++)
@@ -60,6 +60,7 @@ struct Joint
 		for (int i = 0; i < 16; ++i) {
 			local_t[i] = newLocal_t[i];
 		}
+		localQuaternion = Quaternion(local_t);
 	}
 };
 

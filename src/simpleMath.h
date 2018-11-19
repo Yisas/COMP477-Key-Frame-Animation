@@ -71,6 +71,7 @@ void scalar(float s,float* m, float *r);
 
 void add(float *s, float*m, float *r);
 
-float* interpolate(float a[16], float b[16], float t);
+float* interpolateLineraly(float a[16], float b[16], float t);
+Vec3 interpolateLineraly(Vec3 a, Vec3 b, float t);
 
 #endif

@@ -112,7 +112,7 @@ void add(float* s,float* m, float *r)
         r[i]=m[i]+s[i];
 }
 
-float* interpolate(float a[16], float b[16], float t)
+float* interpolateLineraly(float a[16], float b[16], float t)
 {
 	float* result = new float[16];
 	for (int i = 0; i < 16; i++) {
@@ -120,6 +120,15 @@ float* interpolate(float a[16], float b[16], float t)
 	}
 
 	return result;
+}
+
+Vec3 interpolateLineraly(Vec3 a, Vec3 b, float t)
+{
+	return Vec3(
+		a.x + t * (b.x - a.x),
+		a.y + t * (b.y - a.y),
+		a.z + t * (b.z - a.z)
+	);
 }
 
 Vec3 Vec3::operator+(Vec3 other)

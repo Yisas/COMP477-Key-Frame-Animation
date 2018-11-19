@@ -145,7 +145,7 @@ void LoadKeyframesFromFile() {
 		for (int i = 0; i < numOfReadKeyframes; i++) {
 			std::vector<Joint> jointsCopy = myDefMesh.mySkeleton.joints;
 			for (int j = 0; j < jointsCopy.size(); j++) {
-				jointsCopy[j].loadFromLocalQuaternion(readQuaternions[(i * (jointsCopy.size())) + j]);
+				jointsCopy[j].setLocalTransform(readQuaternions[(i * (jointsCopy.size())) + j]);
 			}
 			jointsOfStoredKeyframes.push_back(jointsCopy);
 		}
@@ -233,14 +233,38 @@ void ExecuteInterpolationTimestep() {
 				animationCurrentTimestepValue = 0;
 				ConsoleDisplayCurrentKeyframe();
 			}
+
+			// Perform interpolation
 			else {
-				for (int i = 0; i < myDefMesh.mySkeleton.joints.size(); i++) {
-					myDefMesh.mySkeleton.joints[i].setLocalTransform(
-						interpolate(
-							jointsOfStoredKeyframes[currentKeyframe][i].local_t,
-							jointsOfStoredKeyframes[currentKeyframe + 1][i].local_t,
+
+				switch (currentInterpolationMode)
+				{
+				case InterpolationMode::MATRIX:
+					for (int i = 0; i < myDefMesh.mySkeleton.joints.size(); i++) {
+						myDefMesh.mySkeleton.joints[i].setLocalTransform(
+							interpolateLineraly(
+								jointsOfStoredKeyframes[currentKeyframe][i].local_t,
+								jointsOfStoredKeyframes[currentKeyframe + 1][i].local_t,
+								animationCurrentTimestepValue
+							));
+					}
+					break;
+
+				case InterpolationMode::EULER:
+					for (int i = 0; i < myDefMesh.mySkeleton.joints.size(); i++) {
+						// Convert local quaternions to euler angles and interpolate
+						Vec3 interpolatedEulerAngles = interpolateLineraly(
+							jointsOfStoredKeyframes[currentKeyframe][i].localQuaternion.toEulerAngles(),
+							jointsOfStoredKeyframes[currentKeyframe + 1][i].localQuaternion.toEulerAngles(),
 							animationCurrentTimestepValue
-						));
+						);
+
+						myDefMesh.mySkeleton.joints[i].setLocalTransform(
+							// Build and load quaternion from interpolated euler angles
+							Quaternion(interpolatedEulerAngles.x, interpolatedEulerAngles.y, interpolatedEulerAngles.z));
+					}
+					
+					break;
 				}
 
 				// Changed display now that joints have been interpolated
