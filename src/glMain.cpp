@@ -341,6 +341,40 @@ void ExecuteInterpolationTimestep() {
 	}
 }
 
+void SkipTimeStep(bool inc) {
+	if (inc) {
+		// Stop if at the end
+		if (currentKeyframe == jointsOfStoredKeyframes.size() - 1 && animationCurrentTimestepValue == 1.0f)
+		{
+			return;
+		}
+		else
+			ExecuteInterpolationTimestep();
+	}
+	else {
+		// Stop if at the end
+		if (currentKeyframe == 0 && animationCurrentTimestepValue == 0) {
+			return;
+		}
+		else {
+			animationCurrentTimestepValue -= animationTimestep * animationSpeedMultiplier;	// Check previous
+			if (animationCurrentTimestepValue < 0) {
+				animationCurrentTimestepValue = 1.0f - (animationTimestep * animationSpeedMultiplier * 2);	// Two timestep from the max
+				// Back one keyframe
+				currentKeyframe--;
+				if (currentKeyframe < 0)
+					currentKeyframe = 0;
+
+				ConsoleDisplayCurrentKeyframe();
+			}
+			else {
+				animationCurrentTimestepValue -= animationTimestep * animationSpeedMultiplier;	// Back one to move forward
+			}
+			ExecuteInterpolationTimestep();	// One step forward
+		}
+	}
+}
+
 #pragma endregion
 
 double vlen(double x, double y, double z)
@@ -564,15 +598,27 @@ void handleKeyPress(unsigned char key, int x, int y)
 			}
 			break;
 		case '+':
-			NextKeyframe(); break;
+			if (editingMode)
+				NextKeyframe();
+			else
+				SkipTimeStep(true);
+			break;
 		case '-':
-			PreviousKeyframe(); break;
+			if(editingMode)
+				PreviousKeyframe(); 
+			else
+				SkipTimeStep(false);
+			break;
 		case 'l':
 			LoadKeyframesFromFile(); break;
 		case 's':
 			SaveKeyframesToFile(); break;
 		case 'p':
-			PlayAnimation(); break;
+			if (!animationPlaying)
+				PlayAnimation(); 
+			else
+				StopAnimation();
+			break;
 		case '1':
 			SetInterpolationMode(InterpolationMode::MATRIX); break;
 		case '2':
