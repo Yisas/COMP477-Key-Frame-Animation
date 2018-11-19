@@ -7,7 +7,7 @@ class Quaternion
 {
 public:
 	Quaternion();
-	Quaternion(double x, double y, double z, double w = 0);
+	Quaternion(double x, double y, double z, double w);
 	Quaternion(double angle, Vec3 axis);
 	Quaternion(Vec3 point);
 	Quaternion(float eulerX, float eulerY, float eulerZ);

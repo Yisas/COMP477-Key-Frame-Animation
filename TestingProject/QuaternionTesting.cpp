@@ -7,6 +7,8 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace TestingProject
 {
+	const float marginOfError = 0.0000001f;
+
 	TEST_CLASS(TestingQuaternion)
 	{
 	public:
@@ -40,6 +42,23 @@ namespace TestingProject
 			Assert::AreEqual(quat.getX(), 0.17964346706867218);
 			Assert::AreEqual(quat.getY(), -0.12306522578001022);
 			Assert::AreEqual(quat.getZ(), -0.66845715045928955);
+		}
+
+		TEST_METHOD(TestQuaternionToEulerAngles) {
+			Quaternion testQuaternion = Quaternion(-0.1796434771234497, 0.12306524542316287, 0.6684572366174304, .7111596791928814);
+			Vec3 eulerAngles = testQuaternion.toEulerAngles();
+			Assert::AreEqual(eulerAngles.x, -0.10017841084946398);
+			Assert::AreEqual(eulerAngles.y, 0.42816928274306248);
+			Assert::AreEqual(eulerAngles.z, 1.4871135029690776);
+		}
+
+		TEST_METHOD(TestEulerAnglesToQuaternion) {
+			Vec3 testEulerAngles = { -0.10017841084946398, 0.42816928274306248 , 1.4871135029690776 };
+			Quaternion resultQuaternion = Quaternion(testEulerAngles.x, testEulerAngles.y, testEulerAngles.z);
+			Vec3 resultEulerAngles = resultQuaternion.toEulerAngles();
+			Assert::IsTrue(abs(testEulerAngles.x - resultEulerAngles.x) <= marginOfError);
+			Assert::IsTrue(abs(testEulerAngles.y - resultEulerAngles.y) <= marginOfError);
+			Assert::IsTrue(abs(testEulerAngles.z - resultEulerAngles.z) <= marginOfError);
 		}
 	};
 }

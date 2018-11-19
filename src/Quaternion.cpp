@@ -43,23 +43,23 @@ Quaternion::Quaternion(Vec3 point)
 
 /**
 Euler angles to quaternion.
-X = bank
-Y = heading
-Z = attitude
+X = roll
+Y = pitch
+Z = yaw
 **/
 Quaternion::Quaternion(float eulerX, float eulerY, float eulerZ)
 {
-	float c1 = cos(eulerY / 2);
-	float c2 = cos(eulerZ / 2);
-	float c3 = cos(eulerX / 2);
-	float s1 = sin(eulerY / 2);
-	float s2 = sin(eulerZ / 2);
-	float s3 = sin(eulerX / 2);
+	float cy = cos(eulerZ * 0.5f);
+	float sy = sin(eulerZ * 0.5f);
+	float cr = cos(eulerX * 0.5f);
+	float sr = sin(eulerX * 0.5f);
+	float cp = cos(eulerY * 0.5f);
+	float sp = sin(eulerY * 0.5f);
 
-	w = c1*c2*c3 - s1*s2*s3;
-	x = s1*s2*c3 + c1*c2*s3;
-	y = s1*c2*c3 + c1*s2*s3;
-	z = c1*s2*c3 - s1*c2*s3;
+	w = cy * cr * cp + sy * sr * sp;
+	x = cy * sr * cp - sy * cr * sp;
+	y = cy * cr * sp + sy * sr * cp;
+	z = sy * cr * cp - cy * sr * sp;
 }
 
 Quaternion::Quaternion(float rotationMatrix[16])
