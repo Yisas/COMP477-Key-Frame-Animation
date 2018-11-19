@@ -112,6 +112,16 @@ void add(float* s,float* m, float *r)
         r[i]=m[i]+s[i];
 }
 
+float* interpolate(float a[16], float b[16], float t)
+{
+	float* result = new float[16];
+	for (int i = 0; i < 16; i++) {
+		result[i] = a[i] + t * (b[i] - a[i]); 
+	}
+
+	return result;
+}
+
 Vec3 Vec3::operator+(Vec3 other)
 {
 	return Vec3(x + other.x, y + other.y, z + other.z);

@@ -26,8 +26,14 @@ bool editingMode = true;
 
 // Keyframe memory
 std::vector<std::vector<Joint>> jointsOfStoredKeyframes;
-int currentKeyframePosition = 0;
+int currentKeyframe = 0;
 static const string keyframeFileAddress = "model/keyframes.txt";
+
+// Animation attributes
+bool animationPlaying = false;
+const float animationTimestep = 0.02f;
+float animationSpeedMultiplier = 1.0f;
+float animationCurrentTimestepValue = 0.0f;
 
 //Window parameters
 int width = 1024;
@@ -65,7 +71,7 @@ void ToggleProgramMode() {
 }
 
 void ConsoleDisplayCurrentKeyframe() {
-	cout << "You are now editing in keyframe " << (currentKeyframePosition + 1) << " of " << jointsOfStoredKeyframes.size() << ".\n";
+	cout << "Displaying keyframe " << (currentKeyframe + 1) << " of " << jointsOfStoredKeyframes.size() << ".\n";
 }
 
 // Make the model look like a specific stored keyframe
@@ -80,14 +86,14 @@ void NextKeyframe() {
 		cout << "No keyframes appended yet. Try appending by pressing 't' while in Editing mode\n";
 	}
 	else {
-		if (currentKeyframePosition + 1 >= jointsOfStoredKeyframes.size()) {
-			currentKeyframePosition = 0;
+		if (currentKeyframe + 1 >= jointsOfStoredKeyframes.size()) {
+			currentKeyframe = 0;
 		}
 		else {
-			currentKeyframePosition = currentKeyframePosition + 1;
+			currentKeyframe = currentKeyframe + 1;
 		}
 
-		SetDisplayToNewKeyframe(currentKeyframePosition);
+		SetDisplayToNewKeyframe(currentKeyframe);
 		ConsoleDisplayCurrentKeyframe();
 	}
 }
@@ -97,14 +103,14 @@ void PreviousKeyframe() {
 		cout << "No keyframes appended yet. Try appending by pressing 't' while in Editing mode\n";
 	}
 	else {
-		if (currentKeyframePosition - 1 < 0) {
-			currentKeyframePosition = jointsOfStoredKeyframes.size() - 1;
+		if (currentKeyframe - 1 < 0) {
+			currentKeyframe = jointsOfStoredKeyframes.size() - 1;
 		}
 		else {
-			currentKeyframePosition = currentKeyframePosition - 1;
+			currentKeyframe = currentKeyframe - 1;
 		}
 
-		SetDisplayToNewKeyframe(currentKeyframePosition);
+		SetDisplayToNewKeyframe(currentKeyframe);
 		ConsoleDisplayCurrentKeyframe();
 	}
 }
@@ -133,7 +139,7 @@ void LoadKeyframesFromFile() {
 		keyframeFile.close();
 
 		jointsOfStoredKeyframes.clear();
-		currentKeyframePosition = 0;
+		currentKeyframe = 0;
 		for (int i = 0; i < numOfReadKeyframes; i++) {
 			std::vector<Joint> jointsCopy = myDefMesh.mySkeleton.joints;
 			for (int j = 0; j < jointsCopy.size(); j++) {
@@ -142,7 +148,7 @@ void LoadKeyframesFromFile() {
 			jointsOfStoredKeyframes.push_back(jointsCopy);
 		}
 
-		SetDisplayToNewKeyframe(currentKeyframePosition);
+		SetDisplayToNewKeyframe(currentKeyframe);
 		cout << "Keyframes succesfully loaded.";
 		ConsoleDisplayCurrentKeyframe();
 	}
@@ -171,6 +177,60 @@ void SaveKeyframesToFile() {
 }
 
 #pragma endregion
+
+void PlayAnimation() {
+	if (editingMode) {
+		cout << "Switch to animation mode before playing the animation.\n";
+		return;
+	}
+
+	if (animationPlaying) {
+		// TODO
+		return;
+	}
+
+	cout << "Starting animation from keyframe " << currentKeyframe + 1 << " of " << jointsOfStoredKeyframes.size() << ".\n";
+	animationCurrentTimestepValue = 0;
+	animationPlaying = true;
+}
+
+void StopAnimation() {
+	cout << "Stopping animation.\n";
+	animationPlaying = false;
+	// TODO
+}
+
+void ExecuteInterpolationTimestep() {
+	// If there are keyframes to animate...
+	if (jointsOfStoredKeyframes.size() > 1) {
+		// ... If we haven't reached the end of the animation
+		if (currentKeyframe != jointsOfStoredKeyframes.size() - 1) {
+			animationCurrentTimestepValue += animationTimestep * animationSpeedMultiplier;
+			// If we hit the end of the keyframe interpolation, increase keyframe counter and do nothing
+			if (animationCurrentTimestepValue >= 1.0f) {
+				currentKeyframe++;
+				animationCurrentTimestepValue = 0;
+				ConsoleDisplayCurrentKeyframe();
+			}
+			else {
+				for (int i = 0; i < myDefMesh.mySkeleton.joints.size(); i++) {
+					myDefMesh.mySkeleton.joints[i].setLocalTransform(
+						interpolate(
+							jointsOfStoredKeyframes[currentKeyframe][i].local_t,
+							jointsOfStoredKeyframes[currentKeyframe + 1][i].local_t,
+							animationCurrentTimestepValue
+						));
+				}
+
+				// Changed display now that joints have been interpolated
+				myDefMesh.mySkeleton.updateGlobal();
+				myDefMesh.updateVertices();
+			}
+		}
+		else
+			StopAnimation();
+	}
+}
 
 double vlen(double x, double y, double z)
 {
@@ -385,7 +445,7 @@ void handleKeyPress(unsigned char key, int x, int y)
 			if(editingMode) {
 				jointsOfStoredKeyframes.push_back(myDefMesh.mySkeleton.joints);
 				cout << "Joint stored at position " << jointsOfStoredKeyframes.size() << ".\n";
-				currentKeyframePosition = jointsOfStoredKeyframes.size() - 1;
+				currentKeyframe = jointsOfStoredKeyframes.size() - 1;
 				ConsoleDisplayCurrentKeyframe();
 			}
 			else {
@@ -400,6 +460,8 @@ void handleKeyPress(unsigned char key, int x, int y)
 			LoadKeyframesFromFile(); break;
 		case 's':
 			SaveKeyframesToFile(); break;
+		case 'p':
+			PlayAnimation(); break;
     }
 }
 
@@ -627,6 +689,10 @@ void display()
     	glVertex3f(-3,-0.85,-3);
     glEnd();
 	glPopMatrix();
+
+	if (animationPlaying && !editingMode) {
+		ExecuteInterpolationTimestep();
+	}
 
     glPushMatrix();
 

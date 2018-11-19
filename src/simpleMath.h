@@ -71,4 +71,6 @@ void scalar(float s,float* m, float *r);
 
 void add(float *s, float*m, float *r);
 
+float* interpolate(float a[16], float b[16], float t);
+
 #endif

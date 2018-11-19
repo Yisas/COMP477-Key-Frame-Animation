@@ -55,6 +55,12 @@ struct Joint
 			local_t[i] = newLocal_t[i];
 		}
 	}
+
+	void setLocalTransform(float newLocal_t[16]) {
+		for (int i = 0; i < 16; ++i) {
+			local_t[i] = newLocal_t[i];
+		}
+	}
 };
 
 class Skeleton
