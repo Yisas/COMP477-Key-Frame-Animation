@@ -112,21 +112,39 @@ void PreviousKeyframe() {
 void LoadKeyframesFromFile() {
 	ifstream keyframeFile(keyframeFileAddress);
 	if (keyframeFile.is_open()) {
+		int numOfReadKeyframes = 0;
+		std::vector<Quaternion> readQuaternions;	// Store local quaternions for this set of joints
 		string line;
 
 		while (getline(keyframeFile, line))
 		{
+			numOfReadKeyframes++;
+
 			std::size_t current, previous = 0;
 			current = line.find(" ");
 			while (current != std::string::npos) {
 				Quaternion quaternion = (line.substr(previous, current - previous));
-				cout << quaternion.toString();	// deleteme
+				readQuaternions.push_back(quaternion);
 				previous = current + 1;
 				current = line.find(" ", previous);
 			}
 		}
 
 		keyframeFile.close();
+
+		jointsOfStoredKeyframes.clear();
+		currentKeyframePosition = 0;
+		for (int i = 0; i < numOfReadKeyframes; i++) {
+			std::vector<Joint> jointsCopy = myDefMesh.mySkeleton.joints;
+			for (int j = 0; j < jointsCopy.size(); j++) {
+				jointsCopy[j].loadFromLocalQuaternion(readQuaternions[(i + 1) * j]);
+			}
+			jointsOfStoredKeyframes.push_back(jointsCopy);
+		}
+
+		SetDisplayToNewKeyframe(currentKeyframePosition);
+		cout << "Keyframes succesfully loaded.";
+		ConsoleDisplayCurrentKeyframe();
 	}
 	else {
 		cout << "Could not open file!";
@@ -379,9 +397,9 @@ void handleKeyPress(unsigned char key, int x, int y)
 		case '-':
 			PreviousKeyframe(); break;
 		case 'l':
-			LoadKeyframesFromFile();
+			LoadKeyframesFromFile(); break;
 		case 's':
-			SaveKeyframesToFile();
+			SaveKeyframesToFile(); break;
     }
 }
 

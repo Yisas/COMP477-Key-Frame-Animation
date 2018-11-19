@@ -35,6 +35,7 @@ public:
 
 	// Conversions
 	Mat4 toMatrix();
+	float* toFloatMatrix();
 	Vec3 toEulerAngles();
 	static Quaternion rotationMatrixToQuaternion(float* rotationMatrix);
 
