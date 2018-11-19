@@ -41,6 +41,27 @@ Quaternion::Quaternion(Vec3 point)
 	this->z = point.z;
 }
 
+/**
+Euler angles to quaternion.
+X = bank
+Y = heading
+Z = attitude
+**/
+Quaternion::Quaternion(float eulerX, float eulerY, float eulerZ)
+{
+	float c1 = cos(eulerY / 2);
+	float c2 = cos(eulerZ / 2);
+	float c3 = cos(eulerX / 2);
+	float s1 = sin(eulerY / 2);
+	float s2 = sin(eulerZ / 2);
+	float s3 = sin(eulerX / 2);
+
+	w = c1*c2*c3 - s1*s2*s3;
+	x = s1*s2*c3 + c1*c2*s3;
+	y = s1*c2*c3 + c1*s2*s3;
+	z = c1*s2*c3 - s1*c2*s3;
+}
+
 Quaternion::Quaternion(float rotationMatrix[16])
 {
 	*this = rotationMatrixToQuaternion(rotationMatrix);

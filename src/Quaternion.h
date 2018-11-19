@@ -10,6 +10,7 @@ public:
 	Quaternion(double x, double y, double z, double w = 0);
 	Quaternion(double angle, Vec3 axis);
 	Quaternion(Vec3 point);
+	Quaternion(float eulerX, float eulerY, float eulerZ);
 	Quaternion(float rotationMatrix[16]);
 	Quaternion(std::string quaternion);
 	~Quaternion();
