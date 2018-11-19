@@ -32,7 +32,10 @@ static const string keyframeFileExtension = ".anim";
 
 // Animation attributes
 bool animationPlaying = false;
-const float animationTimestep = 0.02f;
+const float animationTimestep = 0.05f;
+const float animationSpeedMultiplierMax = 20.0f;
+const float animationSpeedMultiplierMin = 0.1f;
+const float animationSPeedMultiplierStep = 0.1f;
 float animationSpeedMultiplier = 1.0f;
 float animationCurrentTimestepValue = 0.0f;
 enum InterpolationMode { MATRIX, EULER, LERP, SLERP};
@@ -75,6 +78,28 @@ void ToggleProgramMode() {
 
 void ConsoleDisplayCurrentKeyframe() {
 	cout << "Displaying keyframe " << (currentKeyframe + 1) << " of " << jointsOfStoredKeyframes.size() << ".\n";
+}
+
+void ChangeTimeStep(bool inc) {
+	if (editingMode)
+		return;
+
+	if (inc) {
+		animationSpeedMultiplier += animationSPeedMultiplierStep;
+		if (animationSpeedMultiplier > animationSpeedMultiplierMax)
+			animationSpeedMultiplier = animationSpeedMultiplierMax;
+		else {
+			cout << "Increased animation speed to " << animationSpeedMultiplier * 100 << "%.\n";
+		}
+	}
+	else {
+		animationSpeedMultiplier -= animationSPeedMultiplierStep;
+		if (animationSpeedMultiplier < animationSpeedMultiplierMin)
+			animationSpeedMultiplier = animationSpeedMultiplierMin;
+		else {
+			cout << "Decreased animation speed to " << animationSpeedMultiplier * 100 << "%.\n";
+		}
+	}
 }
 
 // Make the model look like a specific stored keyframe
@@ -550,6 +575,10 @@ void handleKeyPress(unsigned char key, int x, int y)
 			SetInterpolationMode(InterpolationMode::LERP); break;
 		case '4':
 			SetInterpolationMode(InterpolationMode::SLERP); break;
+		case 'j':
+			ChangeTimeStep(true); break;
+		case 'k':
+			ChangeTimeStep(false); break;
     }
 }
 
