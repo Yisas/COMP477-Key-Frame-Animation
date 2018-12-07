@@ -265,7 +265,7 @@ Quaternion Quaternion::rotationMatrixToQuaternion(float* rotationMatrix)
 
 Quaternion Quaternion::interpolateLineraly(Quaternion a, Quaternion b, float t)
 {
-		return Quaternion(a + ((b - a) * t));
+		return Quaternion(a + ((b - a) * t)).normalize();
 }
 
 Quaternion Quaternion::SLERP(Quaternion a, Quaternion b, float t)
