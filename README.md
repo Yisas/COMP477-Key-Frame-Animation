@@ -25,3 +25,4 @@ Once you have saved all the desired keyframes, switch from "editing" to "play" m
 and the numbered keys 1-4 will switch between the matrix, euler, quaterinion LERP and SLERP interpolation modes, respectively. Hold the "j" 
 and "k" keys to decrease or increase the animation speed.
 
+![keyframe](https://user-images.githubusercontent.com/7291039/56248531-5c275600-6076-11e9-8430-b435385e33ce.gif)
